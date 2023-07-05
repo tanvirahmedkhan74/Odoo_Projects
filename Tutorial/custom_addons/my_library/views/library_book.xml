@@ -33,14 +33,19 @@
 					<field name="short_name"/>
 					<field name="date_release"/>
 					<field name="date_updated"/>
+					<field name="age_days"/>
 					<field name="cover" widget="image" class="oe_avatar"/>
 					<field name="reader_rating"/>
-					<field name="out_of_print"/>
 					<field name="retail_price"/>
 					<field name="currency_id"/>
 				</group>
 				<group>
 					<field name="description"/>
+				</group>
+				<group>
+					<field name="ref_doc_id"/>
+					<field name="out_of_print"/>
+					<field name="active"/>
 				</group>
 			</group>
 		    </form>

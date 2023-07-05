@@ -1,8 +1,9 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 
 class LibraryBook(models.Model):
     _name = 'library.book'
+    _inherit = ['base.archive']
     _description = 'Library Book'
     _rec_name = 'short_name'
     _order = 'date_release desc, name'
@@ -30,6 +31,14 @@ class LibraryBook(models.Model):
     out_of_print = fields.Boolean('Out of Print?')
     date_release = fields.Date('Release Date')
     date_updated = fields.Datetime('Last Updated')
+    age_days = fields.Float(
+        string='Days Since Release',
+        compute='_compute_age',
+        inverse='_inverse_age',
+        search='_search_age',
+        store=False,
+        compute_sudo=True
+    )
 
     pages = fields.Integer('Number of Pages',
                            states={'lost': [('readonly', True)]},
@@ -44,6 +53,13 @@ class LibraryBook(models.Model):
     category_id = fields.Many2one('library.book.category', string='Category')
     publisher_id = fields.Many2one('res.partner', string='Publisher', ondelete='set null')
     author_ids = fields.Many2many('res.partner', string='Authors')
+    publisher_city = fields.Char('Publisher City', related='publisher_id.city', readonly=True)
+
+    ref_doc_id = fields.Reference(selection='_referencable_models', string='Reference Document')
+
+    _sql_constraints = [
+        ('name_uniq', 'UNIQUE (name)', 'Book Title Must be unique'),
+        ('positive_page', 'CHECK(pages > 0)', 'No of Pages Must be Positive Dude!')]
 
     "Overriding name_get() for short title"
 
@@ -55,8 +71,88 @@ class LibraryBook(models.Model):
 
         return result
 
+    @api.constrains('date_release')
+    def _check_release_date(self):
+        for record in self:
+            if record.date_release and record.date_release > fields.Date.today():
+                raise models.ValidationError('Release Date Must be in the past!')
+
+    @api.depends('date_release')
+    def _compute_age(self):
+        today = fields.Date.today()
+
+        for book in self:
+            if book.date_release:
+                delta = today - book.date_release
+                book.age_days = delta.days
+            else:
+                book.age_days = 0
+
+    def _inverse_age(self):
+        today = fields.Date.today()
+        for book in self.filtered('date_release'):
+            d = today - timedelta(days=book.age_days)
+            book.date_release = d
+
+    @api.model
+    def _referencable_models(self):
+        models = self.env['ir.model'].search([('field_id.name', '=', 'message_ids')])
+        return [(x.model, x.name) for x in models]
+
+    "Not Mandatory if store=True is set"
+
+    def _search_age(self, operator, value):
+        today = fields.Date.today()
+        value_days = timedelta(days=value)
+        value_date = today - value_days
+
+        operator_map = {
+            '>': '<', '>=': '<=',
+            '<': '>', '<=': '>=',
+        }
+        new_op = operator_map.get(operator, operator)
+        return [('date_release', new_op, value_date)]
+
+    "Class Inheritance"
     class ResPartner(models.Model):
         _inherit = 'res.partner'
 
         published_book_ids = fields.One2many('library.book', 'publisher_id', string='Published Books')
         authored_book_ids = fields.Many2many('library.book', 'author_ids', string='Authored Books')
+
+        count_books = fields.Integer('Number of Authored Books', compute='_compute_count_books')
+
+        @api.depends('authored_book_ids')
+        def _compute_count_books(self):
+            for r in self:
+                r.count_books = len(r.authored_book_ids)
+
+    "Delegation Inheritance"
+    class LibraryMember(models.Model):
+        _name = 'library.member'
+        _description = 'Inheriting Partner Model using partner_id field'
+        _inherits = {'res.partner':'partner_id'}
+
+        partner_id = fields.Many2one('res.partner', ondelete='cascade')
+
+        date_start = fields.Date('Member Since')
+        date_end = fields.Date('Termination Date')
+        member_number = fields.Char()
+        date_of_birth = fields.Date('Date of birth')
+
+        @api.constrains('date_of_birth')
+        def _check_birth_date(self):
+            today = fields.Date.today()
+
+            for r in self:
+                if r.date_of_birth and r.date_of_birth >= today:
+                    raise models.ValidationError('You can\'t possibly from the Future! Please check DOBirth')
+
+    class BaseArchive(models.AbstractModel):
+        _name = 'base.archive'
+        _description='Adding Active Field'
+        active = fields.Boolean(default=True)
+
+        def do_archive(self):
+            for r in self:
+                r.active = not r.active

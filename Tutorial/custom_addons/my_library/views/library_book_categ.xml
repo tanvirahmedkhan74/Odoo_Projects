@@ -8,7 +8,7 @@
 
 	<menuitem name="Book Categories" id="library_book_category_base_menu"/>
 	<menuitem name="Categories" id="library_book_category_menu"
-		parent="library_book_category_base_menu" action="library_book_category_action"/>
+		parent="library_base_menu" action="library_book_category_action"/>
 	
 	<record id="library_book_category_view_form" model="ir.ui.view">
 		<field name="name">Book Category Form</field>

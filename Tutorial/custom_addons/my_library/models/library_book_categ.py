@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError
 
 class BookCategory(models.Model):
     _name = 'library.book.category'
+    _description = 'Book Categories'
     _parent_store = True
     _parent_name = "parent_id"
     parent_path = fields.Char(index=True)
