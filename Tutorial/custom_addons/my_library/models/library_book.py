@@ -17,6 +17,7 @@ class LibraryBook(models.Model):
         [
             ('draft', 'Not Available'),
             ('available', 'Available'),
+            ('borrowed', 'Borrowed'),
             ('lost', 'Lost')
         ],
         'State', default='draft'
@@ -112,6 +113,32 @@ class LibraryBook(models.Model):
         }
         new_op = operator_map.get(operator, operator)
         return [('date_release', new_op, value_date)]
+    
+    "Changing Book States"
+    @api.model
+    def is_allowed_transition(self, old_state, new_state):
+        allowed = [('draft', 'available'),
+                    ('available', 'borrowed'),
+                    ('borrowed', 'available'),
+                    ('available', 'lost'),
+                    ('borrowed', 'lost'),
+                    ('lost', 'available')]
+
+        return (old_state, new_state) in allowed
+
+    def change_state(self, new_state):
+        for bk in self:
+            if bk.is_allowed(bk.state, new_state):
+                bk.state = new_state
+            else:
+                continue
+
+    def make_available(self):
+        self.change_state('available')
+    def make_borrowed(self):
+        self.change_state('borrowed')
+    def make_lost(self):
+        self.change_state('lost')
 
     "Class Inheritance"
     class ResPartner(models.Model):
