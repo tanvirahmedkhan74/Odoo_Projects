@@ -1,4 +1,6 @@
 from odoo import models, fields, api
+from odoo.exceptions import UserError
+from odoo.tools.translate import _
 
 
 class LibraryBook(models.Model):
@@ -128,10 +130,11 @@ class LibraryBook(models.Model):
 
     def change_state(self, new_state):
         for bk in self:
-            if bk.is_allowed(bk.state, new_state):
+            if bk.is_allowed_transition(bk.state, new_state):
                 bk.state = new_state
             else:
-                continue
+                err = _("Transitioning from %s to %s is not allowed sorry!") % (bk.state, new_state)
+                raise UserError(err)
 
     def make_available(self):
         self.change_state('available')
@@ -139,6 +142,17 @@ class LibraryBook(models.Model):
         self.change_state('borrowed')
     def make_lost(self):
         self.change_state('lost')
+
+    "Accessing Another Model By attaining Empty Recordset"
+    def log_all_library_members(self):
+
+        # Attatining the empty recordset
+        library_member_model = self.env['library.member']
+
+        all_members = library_member_model.search([])
+
+        print("All Members: ",all_members)
+        return True
 
     "Class Inheritance"
     class ResPartner(models.Model):
