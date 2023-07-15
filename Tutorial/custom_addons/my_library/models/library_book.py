@@ -154,6 +154,17 @@ class LibraryBook(models.Model):
         print("All Members: ",all_members)
         return True
 
+    @api.model
+    def books_with_multi_authors(self, all_books):
+         return all_books.filter(lambda b: len(b.author_ids) > 1)
+
+    def filter_books(self):
+        rc_set = self.search([])
+        res = books_with_multi_authors(rc_set)
+
+        logger.info("Books : ", res)
+
+
     "Class Inheritance"
     class ResPartner(models.Model):
         _inherit = 'res.partner'

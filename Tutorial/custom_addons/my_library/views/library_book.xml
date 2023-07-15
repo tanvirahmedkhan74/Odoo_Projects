@@ -50,6 +50,7 @@
 					<field name="out_of_print"/>
 					<field name="active"/>
 					<button name="log_all_library_members" string="Log Members" type="object"/>
+					<button name="filter_books" string="Book Filter" type="object"/>
 				</group>
 			</group>
 		    </form>
