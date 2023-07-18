@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="hr_applicant_for_view_ext" model="ir.ui.view">
+        <field name="name">hr.applicant.ext</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='contract']" position="after">
+                <group string="Emergency">
+                    <field name="emergency_ids" widget="one2many_list">
+                        <tree editable="bottom">
+                            <field name="emp_name"/>
+                            <field name="emp_phone"/>
+                            <field name="emp_address"/>
+                        </tree>
+                    </field>
+                </group>
+                <group string="Education">
+                    <field name="education_ids" widget="one2many_list">
+                        <tree editable="bottom">
+                            <field name="institute"/>
+                            <field name="degree"/>
+                            <field name="passing_year"/>
+                        </tree>
+                    </field>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
