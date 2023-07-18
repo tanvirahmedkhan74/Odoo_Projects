@@ -1,3 +1,8 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-acl_default,hr.employee default,model_hr_applicant,,1,0,0,0
-acl_manager,hr.employee_manager,model_hr_applicant,hr.group_hr_manager,1,1,1,1
+acl_default_appl,hr.employee default,model_hr_applicant,,1,0,0,0
+acl_manager_appl,hr.employee_manager,model_hr_applicant,hr.group_hr_manager,1,1,1,1
+acl_default_emg,hr.applicant.emg default,model_hr_applicant_emg,,1,0,0,0
+acl_manager_amg,hr.applicant.emg_manager,model_hr_applicant_emg,hr.group_hr_manager,1,1,1,1
+acl_default_edu,hr.applicant.edu default,model_hr_applicant_edu,,1,0,0,0
+acl_manager_edu,hr.applicant.edu_manager,model_hr_applicant_edu,hr.group_hr_manager,1,1,1,1
+

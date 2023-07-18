@@ -4,19 +4,25 @@ from odoo import models, fields
 class ApplicantExtension(models.Model):
     _inherit = 'hr.applicant'
 
-    emergency_ids = fields.One2many('hr.employee', 'emergency_id', string="emergency")
-    education_ids = fields.One2many('hr.employee', 'education_id', string="education")
+    emergency_ids = fields.One2many('hr.applicant.emg', 'emergency_id', string="||")
+    education_ids = fields.One2many('hr.applicant.edu', 'education_id', string="||")
 
 
-class ApplicantEmployeeExt(models.Model):
-    _inherit = 'hr.employee'
+class ApplicantEmployeeEmergency(models.Model):
+    _name = 'hr.applicant.emg'
 
     emergency_id = fields.Many2one('hr.applicant', string="Emergency")
-    education_id = fields.Many2one('hr.applicant', string="Education")
 
     emp_name = fields.Char('Name')
     emp_phone = fields.Char('Phone')
     emp_address = fields.Char('Address')
+
+
+class ApplicationEmployeeEducation(models.Model):
+    _name = 'hr.applicant.edu'
+
+    education_id = fields.Many2one('hr.applicant', string="Education")
+    # employee_edu = fields.Many2one('hr.employee', string="Education")
 
     institute = fields.Char('Institute')
     degree = fields.Char('Degree')
