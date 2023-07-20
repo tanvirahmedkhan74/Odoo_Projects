@@ -1,11 +1,26 @@
-from odoo import models, fields
+from odoo import models, fields, api
+
+from odoo13.addons.hr_recruitment.models.hr_recruitment import Applicant
 
 
 class ApplicantExtension(models.Model):
     _inherit = 'hr.applicant'
 
+    parent_id = fields.Many2one('hr.employee', string="Manager")
+
     emergency_ids = fields.One2many('hr.applicant.emg', 'emergency_id', string="||")
     education_ids = fields.One2many('hr.applicant.edu', 'education_id', string="||")
+
+    def create_employee_from_applicant(self):
+        curr_act_window = super(ApplicantExtension, self).create_employee_from_applicant()
+        # Retrieving the employee using the emp_id filed of hr.applicant
+        employee = self.env['hr.employee'].browse(self.emp_id.id)
+        # Assigning the manager or the parent_id
+        employee.write({
+            'parent_id': self.parent_id.id
+        })
+
+        return curr_act_window
 
 
 class ApplicantEmployeeEmergency(models.Model):
@@ -27,3 +42,7 @@ class ApplicationEmployeeEducation(models.Model):
     institute = fields.Char('Institute')
     degree = fields.Char('Degree')
     passing_year = fields.Char('Passing Year')
+
+
+class HrEmployee(models.Model):
+    _inherit = 'hr.employee'

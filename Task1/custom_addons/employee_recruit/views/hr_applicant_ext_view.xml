@@ -23,6 +23,7 @@
                             <field name="passing_year"/>
                         </tree>
                     </field>
+                    <field name="parent_id" widget="many2one_tags"/>
                 </group>
             </xpath>
         </field>
