@@ -16,8 +16,16 @@ class ApplicantExtension(models.Model):
         # Retrieving the employee using the emp_id filed of hr.applicant
         employee = self.env['hr.employee'].browse(self.emp_id.id)
         # Assigning the manager or the parent_id
-        employee.write({
+        employee.update({
             'parent_id': self.parent_id.id
+        })
+
+        employee.write({
+            'emergency_ids': [(0, 0, x) for x in self.emergency_ids]
+        })
+
+        employee.write({
+            'education_ids': [(0, 0, x) for x in self.education_ids]
         })
 
         return curr_act_window
@@ -46,3 +54,6 @@ class ApplicationEmployeeEducation(models.Model):
 
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
+
+    emergency_ids = fields.One2many('hr.applicant.emg', 'emergency_id', string="||")
+    education_ids = fields.One2many('hr.applicant.edu', 'education_id', string="||")
