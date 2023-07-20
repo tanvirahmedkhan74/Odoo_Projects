@@ -13,19 +13,18 @@ class ApplicantExtension(models.Model):
 
     def create_employee_from_applicant(self):
         curr_act_window = super(ApplicantExtension, self).create_employee_from_applicant()
+
         # Retrieving the employee using the emp_id filed of hr.applicant
         employee = self.env['hr.employee'].browse(self.emp_id.id)
+
         # Assigning the manager or the parent_id
-        employee.update({
-            'parent_id': self.parent_id.id
-        })
 
         employee.write({
-            'emergency_ids': [(0, 0, x) for x in self.emergency_ids]
-        })
-
-        employee.write({
-            'education_ids': [(0, 0, x) for x in self.education_ids]
+            'parent_id': self.parent_id.id,
+            'emergency_ids': [(0, 0, {'emp_name': v1, 'emp_phone': v2, 'emp_address': v3}) for v1, v2, v3 in
+                              self.emergency_ids.mapped(lambda rec: (rec.emp_name, rec.emp_phone, rec.emp_address))],
+            'education_ids': [(0, 0, {'institute': v1, 'degree': v2, 'passing_year': v3}) for v1, v2, v3 in
+                              self.education_ids.mapped(lambda rec: (rec.institute, rec.degree, rec.passing_year))]
         })
 
         return curr_act_window
