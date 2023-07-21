@@ -1,0 +1,20 @@
+# Odoo13 project .gitignore file
+
+# Python compiled files
+*.pyc
+
+# Editor backup files
+*~
+
+# Odoo database files
+*.dump
+*.sql
+
+# Log files
+*.log
+
+# Server Configuration File
+*.conf
+
+# Cache files
+__pycache__/

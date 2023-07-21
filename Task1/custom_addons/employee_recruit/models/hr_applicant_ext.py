@@ -11,16 +11,21 @@ class ApplicantExtension(models.Model):
     emergency_ids = fields.One2many('hr.applicant.emg', 'emergency_id', string="||")
     education_ids = fields.One2many('hr.applicant.edu', 'education_id', string="||")
 
+    # For test purpose
+    def test_button(self):
+        print(self.parent_id.user_id.id)
+        print(self.env.user.id)
+
     def create_employee_from_applicant(self):
         curr_act_window = super(ApplicantExtension, self).create_employee_from_applicant()
 
         # Retrieving the employee using the emp_id filed of hr.applicant
         employee = self.env['hr.employee'].browse(self.emp_id.id)
 
-        # Assigning the manager or the parent_id
-
         employee.write({
-            'parent_id': self.parent_id.id,
+            'parent_id': self.parent_id.id,                         # Assigning the manager or the parent_id
+
+            # Mapping Applicant's emergency_ids, education_ids one2many fields data to hr.employee model
             'emergency_ids': [(0, 0, {'emp_name': v1, 'emp_phone': v2, 'emp_address': v3}) for v1, v2, v3 in
                               self.emergency_ids.mapped(lambda rec: (rec.emp_name, rec.emp_phone, rec.emp_address))],
             'education_ids': [(0, 0, {'institute': v1, 'degree': v2, 'passing_year': v3}) for v1, v2, v3 in
