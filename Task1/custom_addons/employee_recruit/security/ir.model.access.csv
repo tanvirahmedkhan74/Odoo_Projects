@@ -5,5 +5,7 @@ acl_default_emg,hr.applicant.emg default,model_hr_applicant_emg,,1,0,0,0
 acl_manager_amg,hr.applicant.emg_manager,model_hr_applicant_emg,hr.group_hr_manager,1,1,1,1
 acl_default_edu,hr.applicant.edu default,model_hr_applicant_edu,,1,0,0,0
 acl_manager_edu,hr.applicant.edu_manager,model_hr_applicant_edu,hr.group_hr_manager,1,1,1,1
+# acl_default_wizard,applicant.wizard default,model_applicant_wizard,,1,0,0,0
+# acl_manager_wizard,applicant.wizard_manager,model_applicant_wizard,hr.group_hr_manager,1,1,1,1
 
 

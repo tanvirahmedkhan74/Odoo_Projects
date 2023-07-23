@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="hr_applicants_leave_wizard_action" model="ir.actions.act_window">
+        <field name="name">Yearly Leave Allocation Wizard</field>
+        <field name="res_model">applicant.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="hr_holidays.hr_leave_allocation_view_form_manager"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

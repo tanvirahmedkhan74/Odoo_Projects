@@ -16,14 +16,29 @@ class ApplicantExtension(models.Model):
         print(self.parent_id.user_id.id)
         print(self.env.user.id)
 
+        return self.show_applicant_wizard()
+
+    # def show_applicant_wizard(self):
+    #     # action = self.env['ir.actions.act_window'].for_xml_id('hr.applicant.leave.wizard',
+    #     #                                                       'hr_applicants_leave_wizard_action')
+    #     action = self.env.ref('applicant.wizard.hr_applicants_leave_wizard_action').read()[0]
+    #     return action
+
+    def show_applicant_wizard(self):
+        # self.env.ref('<module_name>.<action_name>')
+        action = self.env.ref('employee_recruit.hr_applicants_leave_wizard_action').read()[0]
+        return action
+
     def create_employee_from_applicant(self):
+        # self.show_applicant_wizard()
         curr_act_window = super(ApplicantExtension, self).create_employee_from_applicant()
+        leave_action = self.show_applicant_wizard()
 
         # Retrieving the employee using the emp_id filed of hr.applicant
         employee = self.env['hr.employee'].browse(self.emp_id.id)
 
         employee.write({
-            'parent_id': self.parent_id.id,                         # Assigning the manager or the parent_id
+            'parent_id': self.parent_id.id,  # Assigning the manager or the parent_id
 
             # Mapping Applicant's emergency_ids, education_ids one2many fields data to hr.employee model
             'emergency_ids': [(0, 0, {'emp_name': v1, 'emp_phone': v2, 'emp_address': v3}) for v1, v2, v3 in
@@ -32,7 +47,7 @@ class ApplicantExtension(models.Model):
                               self.education_ids.mapped(lambda rec: (rec.institute, rec.degree, rec.passing_year))]
         })
 
-        return curr_act_window
+        return leave_action
 
 
 class ApplicantEmployeeEmergency(models.Model):
@@ -61,3 +76,11 @@ class HrEmployee(models.Model):
 
     emergency_ids = fields.One2many('hr.applicant.emg', 'emergency_id', string="||")
     education_ids = fields.One2many('hr.applicant.edu', 'education_id', string="||")
+
+
+class HrLeaveAllocation(models.TransientModel):
+    _name = 'applicant.wizard'
+    _inherit = 'hr.leave.allocation'
+
+
+
