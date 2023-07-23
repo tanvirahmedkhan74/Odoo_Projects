@@ -1,5 +1,5 @@
 from odoo import models, fields, api
-
+from datetime import datetime
 from odoo13.addons.hr_recruitment.models.hr_recruitment import Applicant
 
 
@@ -26,7 +26,7 @@ class ApplicantExtension(models.Model):
 
     def show_applicant_wizard(self):
         # self.env.ref('<module_name>.<action_name>')
-        action = self.env.ref('employee_recruit.hr_applicants_leave_wizard_action').read()[0]
+        action = self.env.ref('employee_recruit.hr_applicant_wiz_action').read()[0]
         return action
 
     def create_employee_from_applicant(self):
@@ -82,5 +82,29 @@ class HrLeaveAllocation(models.TransientModel):
     _name = 'applicant.wizard'
     _inherit = 'hr.leave.allocation'
 
+    alloc_rel = fields.Many2one('hr.leave.allocation', string="Applicant_Allocation")
 
+    desc = fields.Char('Description')
+    leave_type = fields.Many2one('hr.leave.type', string="Leave Type")
+    days = fields.Float('Duration')
 
+    def create_leave(self):
+        date_obj = datetime.today()
+        today = date_obj.date()
+        curr_year = date_obj.year
+        current_time = date_obj.time()
+
+        last_date = datetime.strptime("31/12/" + str(curr_year) + " " + current_time.strftime("%H:%M:%S"),
+                                      "%d/%m/%Y %H:%M:%S")
+        last_date = last_date.replace(microsecond=0)
+
+        self.env['hr.leave.allocation'].create({
+            'employee_id': self.env.user.id,
+            'allocation_type': 'accrual',
+            'number_per_interval': self.days,
+            'interval_number': 1,
+            'unit_per_interval': 'days',
+            'interval_unit': 'years',
+            'holiday_type': 'employee',
+            'date_to': last_date
+        })

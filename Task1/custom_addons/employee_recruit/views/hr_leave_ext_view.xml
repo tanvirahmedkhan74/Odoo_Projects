@@ -1,10 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="hr_applicants_leave_wizard_action" model="ir.actions.act_window">
-        <field name="name">Yearly Leave Allocation Wizard</field>
+    <!--    <record id="hr_applicants_leave_wizard_action" model="ir.actions.act_window">-->
+    <!--        <field name="name">Yearly Leave Allocation Wizard</field>-->
+    <!--        <field name="res_model">applicant.wizard</field>-->
+    <!--        <field name="view_mode">form</field>-->
+    <!--        <field name="view_id" ref="hr_holidays.hr_leave_allocation_view_form_manager"/>-->
+    <!--        <field name="target">new</field>-->
+    <!--    </record>-->
+
+    <record id="hr_applicant_leave_wiz" model="ir.ui.view">
+        <field name="name">applicant.leave.wiz</field>
+        <field name="model">applicant.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Yearly Leave" confirm="False" cancel="False">
+                <sheet>
+                    <group>
+                        <field name="leave_type" widget="many2one_tags" required="1"/>
+                        <field name="days" required="1"/>
+                        <field name="desc"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="create_leave" string="Save" type="object" class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_applicant_wiz_action" model="ir.actions.act_window">
+        <field name="name">Leave for applicants</field>
         <field name="res_model">applicant.wizard</field>
         <field name="view_mode">form</field>
-        <field name="view_id" ref="hr_holidays.hr_leave_allocation_view_form_manager"/>
+        <field name="view_id" ref="employee_recruit.hr_applicant_leave_wiz"/>
         <field name="target">new</field>
     </record>
+
 </odoo>
